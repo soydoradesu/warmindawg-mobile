@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:warmindawg_mobile/widgets/left_drawer.dart';
+import 'package:warmindawg_mobile/widgets/food_card.dart';
 
 class MyHomePage extends StatelessWidget {
   final String npm = '2306275771'; // NPM
   final String name = 'Valentino Kim Fernando'; // Nama
   final String className = 'PBP F'; // Kelas
   final List<ItemHomepage> items = [
-    ItemHomepage("Lihat Daftar Produk", Icons.mood, Colors.red),
-    ItemHomepage("Tambah Produk", Icons.add, const Color.fromARGB(255, 238, 214, 0)),
+    ItemHomepage("Lihat Daftar Produk", Icons.food_bank, Colors.red),
+    ItemHomepage("Tambah Menu", Icons.add, const Color.fromARGB(255, 238, 214, 0)),
     ItemHomepage("Logout", Icons.logout, Colors.green),
   ];
 
@@ -19,6 +21,7 @@ class MyHomePage extends StatelessWidget {
       // AppBar adalah bagian atas halaman yang menampilkan judul.
       appBar: AppBar(
         // Judul aplikasi "Mental Health Tracker" dengan teks putih dan tebal.
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           'Warmindawg',
           style: TextStyle(
@@ -29,6 +32,7 @@ class MyHomePage extends StatelessWidget {
         // Warna latar belakang AppBar diambil dari skema warna tema aplikasi.
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
+      drawer: const LeftDrawer(),
       // Body halaman dengan padding di sekelilingnya.
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -59,7 +63,7 @@ class MyHomePage extends StatelessWidget {
                   const Padding(
                     padding: EdgeInsets.only(top: 16.0),
                     child: Text(
-                      'Selamat Datang di Warmindawg',
+                      'Selamat datang di Warmindawg!',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18.0,
@@ -86,91 +90,6 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class InfoCard extends StatelessWidget {
-  // Kartu informasi yang menampilkan title dan content.
-
-  final String title; // Judul kartu.
-  final String content; // Isi kartu.
-
-  const InfoCard({super.key, required this.title, required this.content});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      // Membuat kotak kartu dengan bayangan dibawahnya.
-      elevation: 2.0,
-      child: Container(
-        // Mengatur ukuran dan jarak di dalam kartu.
-        width: MediaQuery.of(context).size.width /
-            3.5, // menyesuaikan dengan lebar device yang digunakan.
-        padding: const EdgeInsets.all(16.0),
-        // Menyusun title dan content secara vertikal.
-        child: Column(
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8.0),
-            Text(content),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ItemHomepage {
-  final String name;
-  final IconData icon;
-  final Color color;
-
-  ItemHomepage(this.name, this.icon, this.color);
-}
-
-class ItemCard extends StatelessWidget {
-  final ItemHomepage item;
-
-  const ItemCard(this.item, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: item.color, // Set the color to the specific item's color
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: () {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(
-                content: Text("Kamu telah menekan tombol ${item.name}!")));
-        },
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item.icon,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-                const Padding(padding: EdgeInsets.all(3)),
-                Text(
-                  item.name,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );
