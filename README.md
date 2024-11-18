@@ -1,7 +1,7 @@
 # Warmindawg (A Warmindo with extra spice 🌶️) but mobile
 Warmindawg is a very simple app made with flutter
 
-# Jawaban Tugas Individu (Update: Tugas Individu 7)
+# Jawaban Tugas Individu (Update: Tugas Individu 9)
 
 **Nama**: Valentino Kim Fernando <br />
 **NPM**: 2306275771 <br />
@@ -119,7 +119,7 @@ class _CounterAppState extends State<CounterApp> {
 
 </details>
 
-<details open>
+<details>
     <summary><h2>Tugas Individu 8</h2></summary>
 
 ## 1. Apa kegunaan `const` di Flutter? Apa keuntungan saat menggunakan `const`, kapan sebaiknya digunakan, dan kapan sebaiknya tidak?
@@ -211,3 +211,6 @@ Navigator.pop(context);
 Untuk page dengan jumlah banyak, gunakan `routes` di `MaterialApp` untuk mendefinisikan semua halaman di awal dan gunakan `Navigator` untuk navigasi antar halaman.
 
 </details>
+
+<details open>
+    <summary><h2>Tugas Individu 9</h2></summary>

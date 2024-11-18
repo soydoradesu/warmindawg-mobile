@@ -17,6 +17,7 @@ class _FoodEntryFormPageState extends State<FoodEntryFormPage> {
   String _food = "";
   int _price = 0;
   String _descriptions = "";
+  
   @override
 
   Widget build(BuildContext context) {
