@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:warmindawg_mobile/screens/menu.dart';
 import 'package:warmindawg_mobile/screens/foodentry_form.dart';
+import 'package:warmindawg_mobile/screens/list_foodentry.dart';
 
 class LeftDrawer extends StatelessWidget {
   const LeftDrawer({super.key});
@@ -59,6 +60,17 @@ class LeftDrawer extends StatelessWidget {
                 MaterialPageRoute(
                     builder: (context) => const FoodEntryFormPage()),
               );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.breakfast_dining_sharp),
+            title: const Text('Daftar Menu'),
+            onTap: () {
+                // Route menu ke halaman mood
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FoodEntryPage()),
+                );
             },
           ),
         ],

@@ -3,16 +3,16 @@ import 'package:warmindawg_mobile/widgets/left_drawer.dart';
 import 'package:warmindawg_mobile/widgets/food_card.dart';
 
 class MyHomePage extends StatelessWidget {
+  MyHomePage({super.key});
+
   final String npm = '2306275771'; // NPM
   final String name = 'Valentino Kim Fernando'; // Nama
   final String className = 'PBP F'; // Kelas
   final List<ItemHomepage> items = [
-    ItemHomepage("Lihat Daftar Produk", Icons.food_bank, Colors.red),
+    ItemHomepage("Lihat Daftar Menu", Icons.food_bank, Colors.red),
     ItemHomepage("Tambah Menu", Icons.add, const Color.fromARGB(255, 238, 214, 0)),
     ItemHomepage("Logout", Icons.logout, Colors.green),
   ];
-
-  MyHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
