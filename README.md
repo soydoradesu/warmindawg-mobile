@@ -214,3 +214,477 @@ Untuk page dengan jumlah banyak, gunakan `routes` di `MaterialApp` untuk mendefi
 
 <details open>
     <summary><h2>Tugas Individu 9</h2></summary>
+
+## 1. Jelaskan mengapa kita perlu membuat model untuk melakukan pengambilan ataupun pengiriman data JSON? Apakah akan terjadi error jika kita tidak membuat model terlebih dahulu?
+
+Model diperlukan untuk melakukan CRUD pada data JSON agar data dapat dipetakan ke dalam struktur yang konsisten dan mudah diakses di aplikasi. Model juga membantu validasi, sehingga membuat aplikasi lebih aman dan terstruktur. Tanpa model, data JSON bisa sulit diolah dan rentan terhadap error saat runtime, karena data mungkin memiliki format atau tipe yang tidak sesuai harapan.
+
+## 2. Jelaskan fungsi dari library http yang sudah kamu implementasikan pada tugas ini
+
+Library `http` dalam tugas ini berfungsi untuk melakukan integrasi antara aplikasi dan server, khususnya untuk mengambil atau mengirim data melalui protokol HTTP. Dengan `http`, aplikasi dapat melakukan request seperti `GET` untuk mengambil data atau `POST` untuk mengirim data ke server, dan menerima respon dalam bentuk JSON yang kemudian diolah lebih lanjut. Library ini mempermudah integrasi API, sehingga aplikasi dapat berinteraksi dengan server untuk mendapatkan informasi atau mengirim data secara dinamis dan real-time.
+
+## 3. Jelaskan fungsi dari CookieRequest dan jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
+
+`CookieRequest` berfungsi untuk mengelola sesi autentikasi dan menyimpan informasi cookie dari server dalam aplikasi. Dengan `CookieRequest`, aplikasi dapat melakukan request HTTP (seperti `GET` dan `POST`) yang menyertakan cookie untuk menjaga sesi tetap aktif, memungkinkan pengguna tetap terautentikasi selama aplikasi digunakan tanpa perlu login berulang kali. 
+
+Membagikan instance `CookieRequest` ke seluruh komponen aplikasi sangat penting karena ini memungkinkan setiap komponen mengakses data sesi dan cookie yang sama. Ini menjaga konsistensi autentikasi di seluruh aplikasi, memastikan bahwa semua permintaan ke server yang memerlukan autentikasi dapat dilakukan dengan aman tanpa harus memuat ulang informasi sesi atau login pengguna kembali di setiap halaman.
+
+## 4. Jelaskan mekanisme pengiriman data mulai dari input hingga dapat ditampilkan pada Flutter.
+
+1. **Input Data**: User memasukkan data melalui widget input, seperti `TextField` atau `Form`, yang memungkinkan data dikumpulkan di app.
+
+2. **Transmit data ke Server**: Data yang dikumpulkan kemudian dikemas dalam format yang sesuai, seperti JSON, dan dikirim ke server menggunakan HTTP, misalnya `POST`. `http` atau `CookieRequest` biasanya digunakan untuk mengirim permintaan ini dan menyertakan data yang diperlukan.
+
+3. **Pemrosesan pada Server**: Di server, data diterima dan diproses sesuai dengan business logic dari suatu app. Server kemudian menyimpan data ini atau melakukan operasi yang diminta, seperti menyimpannya ke database atau melakukan perhitungan. Server mengirimkan respons yang mencakup data yang diperbarui atau status operasi.
+
+4. **Penerimaan Respons**: Flutter menerima respons dari server. Respons ini kemudian diubah menjadi model atau objek data yang sesuai, yang memudahkan pengelolaan data di app. Model ini memastikan struktur data konsisten dengan yang diterima dari server.
+
+5. **Menampilkan Data**: Model data kemudian diteruskan ke widget yang menampilkan data pada interface pengguna, misalnya menggunakan widget `ListView` atau `Text`. Flutter secara otomatis memperbarui tampilan ketika data baru tersedia, sehingga pengguna dapat melihat data terbaru yang telah mereka input atau hasil dari pengolahan server.
+
+## 5.  Jelaskan mekanisme autentikasi dari login, register, hingga logout. Mulai dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+
+1. Login:
+
+Flutter - Login Form
+```dart
+final response = await request.login(
+  "http://localhost:8000/auth/login/",
+  {
+    'username': username,
+    'password': password,
+  }
+);
+
+if (response['status']) {
+  Navigator.pushReplacement(...); // Ke homepage jika berhasil
+}
+```
+
+Django - Login Views
+
+```python
+@csrf_exempt
+def login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return JsonResponse({
+            "status": True,
+            "message": "Login successful!"
+        })
+    return JsonResponse({
+        "status": False,
+        "message": "Login failed!"
+    })
+```
+
+2. Register:
+
+Flutter - Register Form
+```dart
+final response = await request.post(
+  "http://localhost:8000/auth/register/",
+  {
+    'username': username,
+    'password': password,
+  }
+);
+
+if (response['status']) {
+  Navigator.pushReplacement(...); // Ke login page jika berhasil
+}
+```
+
+Django - Register Views
+```python
+@csrf_exempt
+def register(request):
+    form = UserCreationForm(request.POST)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({
+            "status": True,
+            "message": "Register successful!"
+        })
+    return JsonResponse({
+        "status": False,
+        "message": "Register failed!"
+    })
+```
+
+3. Logout:
+
+Flutter - Logout 
+```dart
+final response = await request.logout(
+  "http://localhost:8000/auth/logout/"
+);
+
+if (response['status']) {
+  Navigator.pushReplacement(...); // Ke login page
+}
+```
+
+Django - Logout Views
+```python
+@csrf_exempt
+def logout(request):
+    logout(request)
+    return JsonResponse({
+        "status": True,
+        "message": "Logout successful!"
+    })
+```
+
+Mekanisme:
+1. Pada Flutter, User melakukan register/login akun
+2. Data dari user dikirimkan ke Django endpoint
+3. Django melakukan validasi data dan menyimpan data ke database, lalu mengautentikasi user
+4. Jika berhasil, Django mengembalikan response status
+5. Flutter kemudian melakukan redirect sesuai dengan status
+6. Session disimpan dengan cookies untuk request selanjutnya
+7. Jika user logout, Django menghapus session user dan mengembalikan response status
+
+## 6. Jelaskan bagaimana cara kamu mengimplementasikan _checklist_ di atas secara _step-by-step_!
+
+1. Membuat django app bernama authentication dengan menjalankan
+```bash
+py manage.py startapp authentication
+```
+
+2. Menambahkan authentication ke INSTALLED_APPS di `settings.py`
+
+3. Menginstal corsheaders dan menambahkan nya pada `MIDDLEWARE`. Kemudian, menambahkan beberapa variabel cors pada `settings.py`
+
+4. Buatlah method login dengan memasukkan kode berikut pada `views.py` app authentication 
+```python
+@csrf_exempt
+def login(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    user = authenticate(username=username, password=password)
+    if user:
+        login(request, user)
+        return JsonResponse({"status": True})
+    return JsonResponse({"status": False})
+```
+jangan lupa untuk menambahkan endpoint nya pada `urls.py`
+
+5. Menginstall beberapa package yang essential
+```bash
+flutter pub add provider
+flutter pub add pbp_django_auth
+```
+
+6. Melakukan integrasi flutter pada `main.dart`
+```dart
+void main() {
+  runApp(Provider(
+    create: (_) => CookieRequest(),
+    ...
+  ));
+}
+```
+
+7. Membuat login page untuk flutter dengan kode berikut pada `login.dart`
+```dart
+onPressed: () async {
+  final response = await request.login(
+    "http://<URL>/auth/login/",
+    {
+      'username': username,
+      'password': password, 
+    }
+  );
+  
+  if (response['status']) {
+    Navigator.pushReplacement(...);
+  }
+}
+```
+
+7. Pada main/views.py buatlah method create_menu_flutter dan hubungkan endpointnya di urls.py
+```python
+def create_menu_flutter(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+                        
+            new_product = Item.objects.create(
+                user=request.user,
+                name=data['nama'], 
+                price=int(data['harga']),
+                description=data['deskripsi'],
+            )
+            
+            return JsonResponse({
+                "status": "success",
+                "message": "Product berhasil ditambahkan!"
+            }, status=200)
+            
+        except Exception as e:
+            return JsonResponse({
+                "status": "error",
+                "message": str(e)
+            }, status=400)
+            
+    return JsonResponse({
+        "status": "error",
+        "message": "Invalid request method"
+    }, status=401)
+```
+
+8. Membuat subdirektori model pada direktori lib yang berisikan `item.dart`
+```dart
+class Item {
+    String model;
+    int pk;
+    Fields fields;
+
+    Item({
+        required this.model,
+        required this.pk,
+        required this.fields,
+    });
+
+    factory Item.fromJson(Map<String, dynamic> json) => Item(
+        model: json["model"],
+        pk: json["pk"],
+        fields: Fields.fromJson(json["fields"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "model": model,
+        "pk": pk,
+        "fields": fields.toJson(),
+    };
+}
+
+class Fields {
+    int user;
+    String username;
+    String name;
+    int price;
+    String description;
+
+    Fields({
+        required this.user,
+        required this.username,
+        required this.name,
+        required this.price,
+        required this.description,
+    });
+
+    factory Fields.fromJson(Map<String, dynamic> json) => Fields(
+        user: json["user"],
+        username: json["username"],
+        name: json["name"],
+        price: json["price"],
+        description: json["description"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "user": user,
+        "username": username,
+        "name": name,
+        "price": price,
+        "description": description,
+    };
+}
+```
+
+9. Buatlah form submit, dengan fetch fungsi create_menu_flutter di django web pada `foodentry_form.dart`
+```dart
+...
+  final response = await request.postJson(
+    "http://localhost:8000/create-flutter/",
+    jsonEncode(<String, String>{
+      'nama': _food,
+      'harga': _price.toString(),
+      'deskripsi': _descriptions,
+    }),
+  );
+...
+```
+
+10. Integrasikan form dengan CookieRequest
+```dart
+final request = context.watch<CookieRequest>();
+
+onPressed: () async {
+  if (_formKey.currentState!.validate()) {
+    final response = await request.postJson(...);
+    if (response['status'] == 'success') {
+      Navigator.pushReplacement(...);
+    }
+  }
+}
+```
+
+11. Membuat menu logout pada widget `food_card.dart`
+```dart
+onPressed: () async {
+  final response = await request.logout(
+    "http://localhost:8000/auth/logout/");
+  String message = response["message"];
+  ...
+  if (response['status']) {
+    Navigator.pushReplacement(...); 
+  }
+}
+```
+
+12. Mengubah `list_foodentry.dart` menjadi seperti ini untuk membuat detail serta menghubungkan JSON Endpoint
+```dart
+class FoodEntryPage extends StatefulWidget {
+  const FoodEntryPage({super.key});
+  @override
+  State<FoodEntryPage> createState() => _FoodEntryPageState();
+}
+
+class _FoodEntryPageState extends State<FoodEntryPage> {
+  Future<List<Item>> fetchProducts(CookieRequest request) async {
+    try {
+      var response =
+          await request.get('http://localhost:8000/api/menu/json/');
+      List<Item> products = [];
+      List<dynamic> jsonList = response;
+
+      for (var item in jsonList) {
+        products.add(Item.fromJson(item));
+      }
+      return products;
+    } catch (e) {
+      print('Error fetching products: $e');
+      return [];
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('List Menu'),
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+      ),
+      drawer: const LeftDrawer(),
+      body: FutureBuilder(
+        future: fetchProducts(request),
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.data == null) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            if (!snapshot.hasData || snapshot.data.isEmpty) {
+              return const Center(
+                child: Text(
+                  'Kamu belum memasukkan menu.',
+                  style: TextStyle(fontSize: 20, color: Colors.red),
+                ),
+              );
+            } else {
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (_, index) => InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ItemDetailPage(item: snapshot.data![index]),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    elevation: 4,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${snapshot.data![index].fields.name}",
+                            style: const TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                              "Price: Rp${snapshot.data![index].fields.price}"),
+                          const SizedBox(height: 10),
+                          Text(
+                              "Description: ${snapshot.data![index].fields.description}"),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
+          }
+        },
+      ),
+    );
+  }
+}
+
+class ItemDetailPage extends StatelessWidget {
+  final Item item;
+
+  const ItemDetailPage({Key? key, required this.item}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Replace 'fields' with the actual fields of your Item model
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(item.fields.name),
+        backgroundColor: Colors.red,
+        foregroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(item.fields.name,
+                style: const TextStyle(
+                    fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            Text("Price: Rp${item.fields.price}",
+                style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 16),
+            Text("Description: ${item.fields.description}",
+                style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 16),
+            // Add other attributes of your item here
+            // For example:
+            // Text("Category: ${item.fields.category}",
+            //     style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 32),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Back to Menu List'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+```
+
+13. Web dan App telah terhubung dan dapat digunakan!!!
+</details>
