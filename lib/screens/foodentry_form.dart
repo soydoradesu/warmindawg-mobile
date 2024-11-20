@@ -17,7 +17,8 @@ class _FoodEntryFormPageState extends State<FoodEntryFormPage> {
   String _food = "";
   int _price = 0;
   String _descriptions = "";
-  
+  int _quantity = 0;
+
   @override
 
   Widget build(BuildContext context) {
@@ -115,6 +116,35 @@ class _FoodEntryFormPageState extends State<FoodEntryFormPage> {
                   },
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Kuantitas",
+                    labelText: "Kuantitas",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _quantity = int.tryParse(value!) ?? 0;
+                    });
+                  },
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Kuantitas tidak boleh kosong!";
+                    }
+                    if (int.tryParse(value) == null) {
+                      return "Kuantitas harus berupa angka!";
+                    }
+                    if (int.tryParse(value)!  <= 0) {
+                      return "Kuantitas harus berupa angka positif!";
+                    }
+                    return null;
+                  },
+                ),
+              ),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
@@ -132,6 +162,7 @@ class _FoodEntryFormPageState extends State<FoodEntryFormPage> {
                             'nama': _food,
                             'harga': _price.toString(),
                             'deskripsi': _descriptions,
+                            'quantity': _quantity.toString(),
                           }),
                         );
                         if (context.mounted) {

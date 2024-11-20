@@ -87,6 +87,10 @@ class _FoodEntryPageState extends State<FoodEntryPage> {
                           const SizedBox(height: 10),
                           Text(
                               "Description: ${snapshot.data![index].fields.description}"),
+                          const SizedBox(height: 10),
+                          Text(
+                              "Quantity: ${snapshot.data![index].fields.quantity}"
+                          )
                         ],
                       ),
                     ),
@@ -130,10 +134,8 @@ class ItemDetailPage extends StatelessWidget {
             Text("Description: ${item.fields.description}",
                 style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 16),
-            // Add other attributes of your item here
-            // For example:
-            // Text("Category: ${item.fields.category}",
-            //     style: const TextStyle(fontSize: 16)),
+            Text("Quantity: ${item.fields.quantity}",
+                style: const TextStyle(fontSize: 16)),
             const SizedBox(height: 32),
             Center(
               child: ElevatedButton(
